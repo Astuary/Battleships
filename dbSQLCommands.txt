@@ -1,0 +1,99 @@
+create table player1
+(pid varchar(15),
+ email varchar(254),
+ pwrd varchar(20),
+ wins numeric(3),
+ loses numeric(3),
+ own_ships_destroyed numeric(3),
+ opp_ships_destroyed numeric(3),
+ CONSTRAINT pk_pid PRIMARY KEY (pid),
+ CONSTRAINT u_email UNIQUE (email));
+ 
+CREATE TABLE matchstats1
+(mid numeric(3),
+ pid1 varchar(15),
+ pid2 varchar(15),
+ winnerid varchar(15),
+ ships_destroyed_pid1 numeric(1),
+ ships_destoryed_pid2 numeric(1),
+ time_played time,
+ date_played datetime,
+ CONSTRAINT pk_mid PRIMARY KEY (mid),
+ CONSTRAINT fk_pid1 FOREIGN key(pid1) REFERENCES player1(pid),
+ CONSTRAINT fk_pid2 FOREIGN key(pid2) REFERENCES player1(pid));
+ 
+create table ship1
+(shipid numeric(2),
+ shipName varchar(15) not null,
+ shipLength numeric(1),
+ CONSTRAINT pk_sid PRIMARY KEY (shipid));
+ 
+create TABLE playership1
+(mid numeric(3),
+ pid varchar(15),
+ shipid numeric(2),
+ noOfHits numeric(1),
+ startX int(1),
+ startY int(1),
+ endX int(1),
+ endY int(1),
+ CONSTRAINT pk_mps PRIMARY KEY (mid, pid, shipid),
+ CONSTRAINT fk_mid FOREIGN KEY(mid) REFERENCES matchstats1(mid),
+ CONSTRAINT fk_pid FOREIGN KEY(pid) REFERENCES player1(pid),
+ CONSTRAINT fk_shipid FOREIGN KEY(shipid) REFERENCES ship1(shipid));
+
+create or replace trigger update_player
+after update 
+on matchstats1
+for each row
+
+begin
+ if :new.winnerid != '#computer' then
+  update player1
+  set wins = wins + 1, own_ships_destoyed = own_ships_destoyed + :new.ships_destoryed_pid2, opp_ships_destroyed = opp_ships_destroyed + :new.ships_destroyed_pid1 
+  where pid = :new.pid1;
+
+  update player1
+  set loses = loses + 1, own_ships_destoyed = own_ships_destoyed + :new.ships_destoryed_pid2, opp_ships_destroyed = opp_ships_destroyed + :new.ships_destroyed_pid1 
+  where pid = '#computer';
+
+ else
+  update player1
+  set wins = wins + 1, own_ships_destoyed = own_ships_destoyed + :new.ships_destoryed_pid2, opp_ships_destroyed = opp_ships_destroyed + :new.ships_destroyed_pid1 
+  where pid = '#computer';
+
+  update player1
+  set loses = loses + 1, own_ships_destoyed = own_ships_destoyed + :new.ships_destoryed_pid2, opp_ships_destroyed = opp_ships_destroyed + :new.ships_destroyed_pid1 
+  where pid = :new.pid1;
+
+ end if;
+
+end update_player;
+
+create or replace trigger update_player1
+after update 
+on matchstats1
+for each row
+
+begin
+ if :new.winnerid != '#computer' then
+  update player1
+  set wins = wins + 1, own_ships_destoyed = own_ships_destoyed + :new.ships_destoryed_pid2, opp_ships_destroyed = opp_ships_destroyed + :new.ships_destroyed_pid1 
+  where pid = :new.pid1;
+
+  update player1
+  set loses = loses + 1, own_ships_destoyed = own_ships_destoyed + :new.ships_destoryed_pid2, opp_ships_destroyed = opp_ships_destroyed + :new.ships_destroyed_pid1 
+  where pid = '#computer';
+
+ else 
+  update player1
+  set wins = wins + 1, own_ships_destoyed = own_ships_destoyed + :new.ships_destoryed_pid2, opp_ships_destroyed = opp_ships_destroyed + :new.ships_destroyed_pid1 
+  where pid = '#computer';
+
+  update player1
+  set loses = loses + 1, own_ships_destoyed = own_ships_destoyed + :new.ships_destoryed_pid2, opp_ships_destroyed = opp_ships_destroyed + :new.ships_destroyed_pid1 
+  where pid = :new.pid1;
+
+ end if;
+
+end update_player1;
